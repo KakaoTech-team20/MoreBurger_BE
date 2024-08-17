@@ -39,12 +39,12 @@ const s3 = new AWS.S3({
 const upload = multer({ storage: multer.memoryStorage() });
 
 // 기본 라우트
-app.get('/getData', (req, res) => {
+app.get('/api', (req, res) => {
   res.send('Hello from Node.js!');
 });
 
 // 데이터 조회 라우트
-app.get('/getData/getDB', (req, res) => {
+app.get('/api/getDB', (req, res) => {
   const query = 'SELECT * FROM new_table';
 
   connection.query(query, (err, results) => {
@@ -58,7 +58,7 @@ app.get('/getData/getDB', (req, res) => {
 });
 
 // 이미지 업로드 라우트
-app.post('/getData/upload', upload.single('image'), (req, res) => {
+app.post('/api/upload', upload.single('image'), (req, res) => {
   const file = req.file;
   const s3Bucket = 'kakao-moreburger-backend';
 

@@ -8,13 +8,13 @@ EXPOSE 8080
 WORKDIR /app
 
 # package.json과 package-lock.json 파일을 복사
-COPY ./nodejs/package*.json ./
+COPY ./package*.json ./
 
 # 의존성 설치
 RUN npm install
 
 # 애플리케이션 소스 코드를 복사
-COPY ./nodejs .
+COPY . .
 
 # 애플리케이션 시작
-CMD ["node", "app.js"]
+CMD ["node", "App.js"]
