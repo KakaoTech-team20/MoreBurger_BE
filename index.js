@@ -1,11 +1,12 @@
-import express from 'express';
-import 'express-async-errors';
-import cors from 'cors';
-import morgan from 'morgan';
-import helmet from 'helmet';
-import burgersRouter from './router/burgers.js';
-import authRouter from './router/auth.js';
-
+const express = require("express");
+require('express-async-errors');
+const cors = require('cors');
+const morgan = require('morgan');
+const helmet = require('helmet');
+const burgersRouter = require('./router/burgers.js');
+const authRouter = require('./router/auth.js');
+const { config } = require('./config.js');
+const { sequelize } = require('./db/database.js');
 
 const app = express();
 
@@ -14,8 +15,8 @@ app.use(helmet());
 app.use(cors());
 app.use(morgan('tiny'));
 
-app.use('/burgers', burgersRouter);
-app.use('/auth', authRouter);
+// app.use('/api/burgers', burgersRouter);
+app.use('/api/auth', authRouter);
 
 app.use((req, res, next) => {
   res.sendStatus(404);
@@ -25,8 +26,11 @@ app.use((error, req, res, next) => {
   console.error(error);
   res.sendStatus(500);
 });
-
-sequelize.sync().then(() => {
-  const server = app.listen(config.host.port);
-  initSocket(server);
-});
+sequelize.query(`CREATE SCHEMA IF NOT EXISTS ${config.db.database};`).then(
+  ()=> {
+    sequelize.sync().then((client) => {
+      console.log(client);
+      const server = app.listen(config.host.port);
+    });
+  }
+);
