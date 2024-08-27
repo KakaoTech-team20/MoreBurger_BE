@@ -26,6 +26,7 @@ async function signup(req, res) {
 }
 
 async function login(req, res) {
+  console.log('login');
   const { email, password } = req.body;
   const user = await userRepository.findByEmail(email);
   if (!user) {

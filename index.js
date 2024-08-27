@@ -15,7 +15,7 @@ app.use(helmet());
 app.use(cors());
 app.use(morgan('tiny'));
 
-// app.use('/api/burgers', burgersRouter);
+app.use('/api/burgers', burgersRouter);
 app.use('/api/auth', authRouter);
 
 app.use((req, res, next) => {
@@ -26,11 +26,8 @@ app.use((error, req, res, next) => {
   console.error(error);
   res.sendStatus(500);
 });
-sequelize.query(`CREATE SCHEMA IF NOT EXISTS ${config.db.database};`).then(
-  ()=> {
-    sequelize.sync().then((client) => {
-      console.log(client);
-      const server = app.listen(config.host.port);
-    });
-  }
-);
+
+sequelize.sync().then((client) => {
+  console.log(client);
+  const server = app.listen(config.host.port);
+});

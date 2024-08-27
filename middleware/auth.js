@@ -20,10 +20,18 @@ const isAuth = async (req, res, next) => {
       return res.status(401).json(AUTH_ERROR);
     }
     req.userId = user.id; // req.customData
+    req.role = user.role;
     next();
   });
 };
 
+const isSeller = async (req, res, next) => {
+  if (req.role !== 'seller') {
+    return res.status(401).json(AUTH_ERROR);
+  }
+  next();
+}
 module.exports = {
   isAuth,
+  isSeller,
 };
