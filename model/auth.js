@@ -29,10 +29,15 @@ const User = sequelize.define(
     sex: {
         type: DataTypes.STRING(8),
         allowNull: false,
+        isIn: [['male', 'female']]
     },
     spicy: {
-        type: DataTypes.STRING(128),
+        type: DataTypes.INTEGER,
         allowNull: false,
+        validate: {
+          max: 2,
+          min: 0
+        }
     },
     role: {
       type: DataTypes.STRING(128),

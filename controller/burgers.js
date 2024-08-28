@@ -2,7 +2,6 @@ const burgerRepository = require('../model/burgers.js');
 
 
 async function getBurgers(req, res) {
-  console.log('getBurgers');
   const role = req.role;
   const data = await (role === 'seller'
     ? burgerRepository.getAllByUserRole(role)
@@ -21,10 +20,13 @@ async function getBurger(req, res, next) {
 }
 
 async function createBurger(req, res, next) {
-  console.log('creating');
-  const burger = await burgerRepository.create(req.body, req.userId);
-  console.log(burger);
-  return res.status(201).json(burger);
+
+  const [created, burger] = await burgerRepository.create(req.body, req.userId);
+  if (created) {
+    return res.status(201).json({message: `Burger ${burger} successfully created`});
+  } else {
+    return res.status(403).json({message: `Burger ${burger} already exists`});
+  }
 }
 
 async function updateBurger(req, res, next) {

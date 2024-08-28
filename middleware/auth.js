@@ -16,11 +16,12 @@ const isAuth = async (req, res, next) => {
       return res.status(401).json(AUTH_ERROR);
     }
     const user = await userRepository.findById(decoded.id);
-    if (!user) {
+    if (!user && req.method !== 'GET') {
       return res.status(401).json(AUTH_ERROR);
     }
     req.userId = user.id; // req.customData
-    req.role = user.role;
+    req.role = user.role ? user.role : 'user';
+    res.set('role', user.role ? user.role : 'user');
     next();
   });
 };

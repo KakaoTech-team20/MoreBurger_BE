@@ -12,7 +12,6 @@ const Burger = sequelize.define(
         },
         name: {
             type: DataTypes.STRING(128),
-            // primaryKey: true,
             allowNull: false,
         },
         description: {
@@ -31,7 +30,6 @@ const Burger = sequelize.define(
         },
         brand: {
             type: DataTypes.STRING(128),
-            // primaryKey: true,
             allowNull: false,
         },
         managerId: {
@@ -46,10 +44,18 @@ const Burger = sequelize.define(
             type: DataTypes.INTEGER,
             allowNull: false,
         },
+        spicy: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+        },
     },
     {
         timestamps: true,
         tableName: 'burgers',
+        indexes: [{
+            unique: true,
+            fields: ['brand', 'name'],
+        }]
     }
 );
 
@@ -65,6 +71,7 @@ const Order = sequelize.define(
         UserId: {
             type: DataTypes.INTEGER,
             allowNull: false,
+            primaryKey: true,
             references: {
                 model: User,
                 key: 'id'
@@ -74,6 +81,7 @@ const Order = sequelize.define(
         BurgerId: {
             type: DataTypes.INTEGER,
             allowNull: false,
+            primaryKey: true,
             references: {
                 model: Burger,
                 key: 'id'
@@ -88,7 +96,7 @@ const Order = sequelize.define(
     {
         timestamps: true,
         updatedAt: false,
-        tableName: 'orders'
+        tableName: 'orders',
     }
 );
 
@@ -161,20 +169,29 @@ async function getAllByUserRole(role) {
 async function getById(id) {
     return Burger.findByPk(id,INCLUDE_BURGER_ALLERGIES);
 }
-  
+
 async function create(burger, userId) {
     const {allergies, ...burgerData} = burger;
-    const data = await Burger.create({ ...burgerData, managerId: userId,
-        burgerAllergies: allergies.map(allergy => { BurgerId: burgerData.burgerId ,allergy}),
-    },
-    {
-        include: [BurgerAllergies]
+    // const data = await Burger.create({ ...burgerData, managerId: userId,
+    //     burgerAllergies: allergies.map(allergy => { BurgerId: burgerData.burgerId ,allergy}),
+    // },
+    // {
+    //     include: [BurgerAllergies]
+    // });
+    const [data, created] = await Burger.findOrCreate({
+        where: {
+            name: burgerData.name,
+            brand: burgerData.brand
+        },
+        defaults: burgerData
     });
-    await BurgerAllergies.bulkCreate(allergies.map((allergy) => ({
-        BurgerId: data.id,
-        allergy,
-    })));
-    return data.id;
+    if (created) {
+        await BurgerAllergies.bulkCreate(allergies.map((allergy) => ({
+            BurgerId: data.id,
+            allergy,
+        })));
+    }
+    return [created, data.id];
 }
 
 async function update(id, burgerSource) {
