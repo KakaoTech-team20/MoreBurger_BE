@@ -48,7 +48,7 @@ pipeline {
                             docker pull ${ECR_REPO}:latest
                             docker stop node_server || true
                             docker rm node_server || true
-                            docker run -d --env-file /path/to/your/.env -p 8080:8080 --name node_server ${ECR_REPO}:latest
+                            docker run -d --env-file .env -p 8080:8080 --name node_server ${ECR_REPO}:latest
                             docker system prune -f 
                             docker image prune -f
                             '
