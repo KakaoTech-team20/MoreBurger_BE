@@ -21,7 +21,7 @@ const isAuth = async (req, res, next) => {
     }
     req.userId = user.id; // req.customData
     req.role = user.role ? user.role : 'user';
-    res.setHeader('role', user.role ? user.role : 'user');
+    res.setHeader('X-role', user.role ? user.role : 'user');
     console.log(`req.userId ${req.userId} req.role ${req.role}`);
     next();
   });
