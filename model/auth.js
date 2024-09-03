@@ -20,7 +20,7 @@ const User = sequelize.define(
     },
     age: {
         type: DataTypes.INTEGER,
-        allowNull: false,
+        defaultValue: null,
     },
     nickname: {
       type: DataTypes.STRING(128),
@@ -29,7 +29,7 @@ const User = sequelize.define(
     sex: {
         type: DataTypes.STRING(8),
         allowNull: false,
-        isIn: [['male', 'female']]
+        isIn: [['M', 'F']]
     },
     spicy: {
         type: DataTypes.INTEGER,
@@ -41,17 +41,22 @@ const User = sequelize.define(
     },
     role: {
       type: DataTypes.STRING(128),
-      allowNull: false,
+      defaultValue: 'user',
     },
     capacity: {
         type: DataTypes.STRING(128),
-        allowNull: false,
+        defaultValue: 'medium',
+        isIn: [['medium', 'small', 'large']]
     },
   },
   { 
     timestamps: true, 
     updatedAt: false,
     tableName: 'users', // 테이블 이름
+    indexes: [{
+      unique: true,
+      fields: ['email'],
+    }]
   }
 );
 
@@ -102,6 +107,7 @@ async function createUser(userData, allergies) {
             include: [{ model: UserAllergies, as: "userAllergies"}]
         },
     );
+
     const userAllergies = allergies.map((allergy) => ({
         userId: user.id,
         allergy,

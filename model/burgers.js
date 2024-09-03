@@ -15,22 +15,24 @@ const Burger = sequelize.define(
             allowNull: false,
         },
         description: {
-            type: DataTypes.TEXT
+            type: DataTypes.TEXT,
+            defaultValue: null,
         },
         price: {
             type: DataTypes.INTEGER,
-            allowNull: false,
+            defaultValue: 0,
         },
         calory: {
             type: DataTypes.INTEGER,
-            allowNull: false,
+            defaultValue: null,
         },
         image: {
             type: DataTypes.TEXT,
+            defaultValue: null,
         },
         brand: {
             type: DataTypes.STRING(128),
-            allowNull: false,
+            defaultValue: null,
         },
         managerId: {
             type: DataTypes.INTEGER,
@@ -42,11 +44,11 @@ const Burger = sequelize.define(
         },
         weight: {
             type: DataTypes.INTEGER,
-            allowNull: false,
+            defaultValue: null,
         },
         spicy: {
             type: DataTypes.INTEGER,
-            allowNull: false,
+            defaultValue: null,
         },
     },
     {
@@ -91,6 +93,7 @@ const Order = sequelize.define(
         amount: {
             type: DataTypes.INTEGER,
             allowNull: false,
+            defaultValue: 1,
         }
     },
     {
@@ -101,7 +104,7 @@ const Order = sequelize.define(
 );
 
 const BurgerAllergies = sequelize.define(
-    'BurgerAllergy',
+    'burgerAllergies',
     {
         BurgerId: {
             type: DataTypes.INTEGER,
@@ -118,6 +121,7 @@ const BurgerAllergies = sequelize.define(
         }
     },
     {
+        timestamps: false,
         tableName: 'burgerAllergies',
     }
 );
@@ -134,12 +138,13 @@ User.belongsToMany(Burger, { through: Order});
 
 const INCLUDE_BURGER_ALLERGIES = {
     attributes: {
-      include: [[sequelize.fn('JSON_ARRAYAGG', sequelize.col('BurgerAllergies.allergy')), 'allergies']],
+      include: [[sequelize.fn('JSON_ARRAYAGG', sequelize.col('burgerAllergies.allergy')), 'allergies']],
     },
     include: [{
       model: BurgerAllergies,
-      attributes: [],
+      attributes: ['allergy'],
     }],
+    group: 'id',
 };
   
   const ORDER_DESC = {
@@ -148,21 +153,24 @@ const INCLUDE_BURGER_ALLERGIES = {
 
   
 async function getAll() {
-    return Burger.findAll({ ...INCLUDE_BURGER_ALLERGIES, ...ORDER_DESC });
+    return Burger.findAll({ 
+        ...INCLUDE_BURGER_ALLERGIES, 
+        ...ORDER_DESC,
+    });
 }
   
 async function getAllByUserRole(role) {
+
     return Burger.findAll({
         ...INCLUDE_BURGER_ALLERGIES,
         ...ORDER_DESC,
-        include: {
-            ...INCLUDE_BURGER_ALLERGIES.include,
-        },
-        where: { '$User.role$': role },
-        include: [{
-            model: User,
-            attributes: [],
-        }],
+        // include: [{
+        //     model: User,
+        //     attributes: [],
+        //     where: { role },
+        // }, 
+        // ...INCLUDE_BURGER_ALLERGIES.include,
+        // ],
     });
 }
 
@@ -172,12 +180,7 @@ async function getById(id) {
 
 async function create(burger, userId) {
     const {allergies, ...burgerData} = burger;
-    // const data = await Burger.create({ ...burgerData, managerId: userId,
-    //     burgerAllergies: allergies.map(allergy => { BurgerId: burgerData.burgerId ,allergy}),
-    // },
-    // {
-    //     include: [BurgerAllergies]
-    // });
+
     const [data, created] = await Burger.findOrCreate({
         where: {
             name: burgerData.name,
@@ -196,9 +199,9 @@ async function create(burger, userId) {
 
 async function update(id, burgerSource) {
     const {allergies, ...burgerData} = burgerSource;
+    
     return Burger.findByPk(id, INCLUDE_BURGER_ALLERGIES) //
         .then((burgerTarget) => {
-        // Object.assign(burgerTarget, burgerData);
         burgerTarget.set(burgerData);
         return burgerTarget.save();
         }).catch((err) => {console.log(err);});

@@ -22,6 +22,7 @@ const isAuth = async (req, res, next) => {
     req.userId = user.id; // req.customData
     req.role = user.role ? user.role : 'user';
     res.set('role', user.role ? user.role : 'user');
+    console.log(`req.userId ${req.userId} req.role ${req.role}`);
     next();
   });
 };
@@ -29,8 +30,9 @@ const isAuth = async (req, res, next) => {
 const isSeller = async (req, res, next) => {
   if (req.role !== 'seller') {
     return res.status(401).json(AUTH_ERROR);
+  } else {
+    next();
   }
-  next();
 }
 module.exports = {
   isAuth,

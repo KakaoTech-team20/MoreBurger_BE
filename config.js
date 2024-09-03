@@ -1,4 +1,5 @@
 const dotenv = require('dotenv');
+const { buildCheckFunction } = require('express-validator');
 dotenv.config();
 
 function required(key, defaultValue = undefined) {
@@ -26,6 +27,16 @@ const config = {
     database: required('DB_DATABASE'),
     password: required('DB_PASSWORD'),
   },
+  aws: {
+    s3: {
+      param: {
+        accessKeyId: required('AWS_IAM_USER_ACCESSKEY'), // AWS IAM 사용자 액세스 키
+        secretAccessKey: required('AWS_IAM_USER_SECRET_ACCESSKEY'), // AWS IAM 사용자 비밀 액세스 키
+        region: 'ap-northeast-2', // S3 버킷이 위치한 리전
+      },
+      bucket: required('AWS_S3_BUCKET'),
+    }
+  }
 };
 
 module.exports = {

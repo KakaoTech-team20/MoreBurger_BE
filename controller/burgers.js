@@ -6,7 +6,12 @@ async function getBurgers(req, res) {
   const data = await (role === 'seller'
     ? burgerRepository.getAllByUserRole(role)
     : burgerRepository.getAll());
-  return res.status(200).json(data);
+  return res.status(200).json({
+    burgers: data,
+    totalCount: data.length,
+    pageNum: null,
+    pageLimit: null,
+  });
 }
 
 async function getBurger(req, res, next) {
@@ -20,7 +25,7 @@ async function getBurger(req, res, next) {
 }
 
 async function createBurger(req, res, next) {
-
+  req.body.managerId = req.userId;
   const [created, burger] = await burgerRepository.create(req.body, req.userId);
   if (created) {
     return res.status(201).json({message: `Burger ${burger} successfully created`});
@@ -35,10 +40,11 @@ async function updateBurger(req, res, next) {
   if (!burger) {
     return res.status(404).json({ message: `Burger not found: ${id}` });
   }
-  if (burger.userId !== req.userId) {
+  if (burger.managerId !== req.userId) {
     return res.sendStatus(403);
   }
-  const updated = await burgerRepository.update(id, req.body);
+  const updateObj = Object.fromEntries(Object.entries(req.body).filter(([key, value]) => value !== null && burger[key] !== value));
+  const updated = await burgerRepository.update(id, updateObj);
   res.status(200).json(updated);
 }
 
