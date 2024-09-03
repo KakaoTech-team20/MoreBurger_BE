@@ -36,6 +36,7 @@ async function login(req, res) {
     return res.status(401).json({ message: '유효하지 않은 아이디/비밀번호입니다.' });
   }
   const token = createJwtToken(user.id);
+  res.set('X-User-Role', user.role ? user.role : 'user');
   res.status(200).json({ token, username : user.nickname });
 }
 

@@ -19,10 +19,9 @@ const isAuth = async (req, res, next) => {
     if (!user && req.method !== 'GET') {
       return res.status(401).json(AUTH_ERROR);
     }
+    res.set('X-User-Role', user.role ? user.role : 'user');
     req.userId = user.id; // req.customData
     req.role = user.role ? user.role : 'user';
-    res.setHeader('X-role', user.role ? user.role : 'user');
-    console.log(`req.userId ${req.userId} req.role ${req.role}`);
     next();
   });
 };
