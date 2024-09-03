@@ -10,12 +10,13 @@ const { sequelize } = require('./db/database.js');
 
 const app = express();
 const corsOptions = {
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Custom-Header'], // 허용할 헤더
   exposedHeaders: ['X-Custom-Header'], // 클라이언트에서 접근 가능한 헤더
 };
 
 app.use(express.json());
 app.use(helmet());
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(morgan('tiny'));
 
 app.use('/api/burgers', burgersRouter);
