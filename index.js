@@ -9,6 +9,9 @@ const { config } = require('./config.js');
 const { sequelize } = require('./db/database.js');
 
 const app = express();
+const corsOptions = {
+  exposedHeaders: ['X-Custom-Header'], // 클라이언트에서 접근 가능한 헤더
+};
 
 app.use(express.json());
 app.use(helmet());
