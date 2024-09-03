@@ -52,7 +52,7 @@ async function deleteBurger(req, res, next) {
   const id = req.params.id;
   const burger = await burgerRepository.getById(id);
   if (!burger) {
-    return res.status(404).json({ message: `Burger not found: ${id}` });
+    return res.status(404).json({ message: `Burger id(${id}) not found` });
   }
   if (burger.userId !== burger.userId) {
     return res.sendStatus(403);

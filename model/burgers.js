@@ -142,7 +142,7 @@ const INCLUDE_BURGER_ALLERGIES = {
     },
     include: [{
       model: BurgerAllergies,
-      attributes: ['allergy'],
+      attributes: [],
     }],
     group: 'id',
 };
@@ -164,13 +164,6 @@ async function getAllByUserRole(role) {
     return Burger.findAll({
         ...INCLUDE_BURGER_ALLERGIES,
         ...ORDER_DESC,
-        // include: [{
-        //     model: User,
-        //     attributes: [],
-        //     where: { role },
-        // }, 
-        // ...INCLUDE_BURGER_ALLERGIES.include,
-        // ],
     });
 }
 

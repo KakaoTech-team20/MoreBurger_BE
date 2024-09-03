@@ -12,13 +12,13 @@ const validateCredential = [
   body('password')
     .trim()
     .isLength({ min: 5 })
-    .withMessage('password should be at least 5 characters'),
+    .withMessage('비밀번호는 최소 5자 이상이어야합니다.'),
   validate,
 ];
 
 const validateSignup = [
   ...validateCredential,
-  body('nickname').trim().notEmpty().withMessage('name is missing'),
+  body('nickname').trim().notEmpty().withMessage('닉네임을 입력해주세요'),
   validate,
 ];
 
