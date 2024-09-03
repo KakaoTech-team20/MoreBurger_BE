@@ -27,7 +27,7 @@ app.use((error, req, res, next) => {
   res.sendStatus(500);
 });
 
-sequelize.sync().then((client) => {
+sequelize.sync({alter: true}).then((client) => {
   console.log(client);
   const server = app.listen(config.host.port);
 });
