@@ -22,6 +22,7 @@ async function signup(req, res) {
     role,
   }, allergies);
   const token = createJwtToken(userId);
+  res.set('X-User-Role', user.role ? user.role : 'user');
   res.status(201).json({ token, username: nickname });
 }
 
